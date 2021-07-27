@@ -62,10 +62,6 @@ names(all)[3] <- "pred_ci_high"
 names(all)[4] <- "observed"
 all$residuals <- all$observed - all$predicted
 
-# Check for extreme outliers -- should be none
-all[which(all$observed>120 & all$predicted<80),]
-all[which(all$observed<80 & all$predicted>140),]
-
 # index for later
 all$ind <- paste(all$id,all$observed,all$k,sep="_")
 data$ind <- paste(data$id,data$fl,data$k,sep="_")
