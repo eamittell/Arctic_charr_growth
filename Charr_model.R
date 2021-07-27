@@ -1,8 +1,8 @@
-#############################
-# CHARR TEMPERATURE MODEL 1 #
-#############################
+###############
+# CHARR MODEL #
+###############
 # Lizy
-# Latest re-run: 24th July 2020
+# Latest re-run: 7th July 2021
 
 library(rjags)
 
@@ -80,16 +80,31 @@ num_season <- as.integer(as.factor(season$season))
 
 cave_k_mat <- matrix(1:300, nrow = 20, ncol = 15) # Gives an integer value for each cave at each capture event
 
-n <- length(unique(data$id)) # 3810 individual fish
+n <- length(unique(data$id)) # 3804 individual fish
 k <- length(unique(data$k)) # 15 capture occassions
 y <- length(unique(data$year)) # 8 years
 d <- length(unique(data$day_index)) # 5 max caught within one k
 c <- length(unique(data$cave)) # 20 caves
 
-# Individuals to trace their growth trajectories
-gro_ind <- read.csv("fish_being_traced.csv")
-gro_ind_id <- gro_ind[,1]
-gro_ind_first <- gro_ind[,2]
+# Tracing 10 individual growth trajectories
+# Get multicapture data
+multi <- as.data.frame(table(data$id))
+multi <- multi[multi[,2]>1,]
+nm <- multi[,1]
+# Randomly select 10 individuals to remove a measurement from their data and trace their growth trajectories
+r <- sample(nm, 10, replace=F)
+# Get these individuals out of the data
+gro_ind <- data[which(data$id %in% r),]
+gro_ind_id <- as.factor(unique(gro_ind[,1]))
+fish <- NULL
+for(i in levels(gro_ind_id)){
+	fish[i] <- gro_ind[which(gro_ind$id %in% i),15]
+}
+gro_ind_first <- fish
+names(gro_ind_first) <- NULL
+#write.csv(fish, file=paste("fish_traced_07_07_21.csv",sep=""))
+
+gro_ind_id <- as.character(gro_ind_id)
 
 ##### MODEL -- TEMPERATURE USING MONTHLY AVERAGES ######
 temp_model <-"var size[n,k], growth[n,k];
@@ -305,7 +320,7 @@ temp_model <- jags.model(file="./temp_model.jags", data=data_fish_temp, n.chains
 
 results <- jags.samples(model=temp_model, variable.names=c("sd","mu","mu_temp","beta","beta_temp","beta_temp_size","b_temp_cave","b_temp_year","sd_temp","sd_temp_cave","sd_temp_year","sd_temp_res","sd_a_t_sum","sd_b_t_sum","sd_a_t_win","sd_b_t_win","cor_ab_t_sum","cor_ab_t_win","sd_a_s_sum","sd_b_s_sum","sd_a_s_win","sd_b_s_win","cor_ab_s_sum","cor_ab_s_win","sd_a_ts_sum","sd_b_ts_sum","sd_a_ts_win","sd_b_ts_win","cor_ab_ts_sum","cor_ab_ts_win","rand_gr_coefs_t","rand_gr_coefs_s","rand_gr_coefs_t_s","beta_g","temp","lengths"), n.iter=100000, thin=10)
 
-#save(results_temp_1,file="charr_results.rda")
+#save(results,file="charr_results.rda")
 
 # Check the model convergence
 f <-function(x){
