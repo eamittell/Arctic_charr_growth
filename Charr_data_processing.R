@@ -2,7 +2,8 @@
 ## Processing Charr data ##
 ###########################
 # Lizy
-# 3rd July 2020 -- final update
+# 3rd July 2020 -- update
+# 7th July 2021 -- removal of 15 individuals with huge increase in size
 
 library(readxl)
 library(tidyverse)
@@ -414,6 +415,50 @@ charr_data <- charr_data[which(!(charr_data$index %in% decreases_3$index)),]
 recap_2 <- decreases_2[which(decreases_2$comment == "RECAP"| decreases_2$comment == "Recap"| decreases_2$comment == "recap"),]
 charr_data <- charr_data[which(!(charr_data$index %in% recap_2$index)),]
 str(charr_data) # 9262 observations from 3810 fish with the ids as good as possible
+
+# 7th July 2021
+# Checking for those that have a big increase in size within and between sampling occasions
+# Assign k to the sampling occasions
+str(multiple_fl)
+multiple_fl$s <- NA
+multiple_fl$s[multiple_fl$season=="august"] <- "b"
+multiple_fl$s[multiple_fl$season=="june"] <- "a"
+multiple_fl$k <- paste(multiple_fl$year,multiple_fl$s,sep="_")
+multiple_fl$k <- as.integer(as.factor(multiple_fl$k))
+# find those that increase >45 mm across k
+increases_45 <- NULL 
+for(i in levels(multiple_fl$id)){
+	a <- multiple_fl[which(multiple_fl$id %in% i),]
+	a <- as.data.frame(a[order(a$date),])
+	for(j in 2:length(a$id)){
+		if(a$k[j-1] == a$k[j]-1 & a$fl[j] > a$fl[j-1] & (a$fl[j] - a$fl[j-1]) > 45){
+			b <- a[(j-1):j,]
+			increases_45 <- rbind(increases_45,b)
+		}
+	}
+}
+increases_45
+# find those that increase >20 mm within k (across capture weeks)
+increases_20 <- NULL 
+for(i in levels(multiple_fl$id)){
+	a <- multiple_fl[which(multiple_fl$id %in% i),]
+	a <- as.data.frame(a[order(a$date),])
+	for(j in 2:length(a$id)){
+		if(a$k[j-1] == a$k[j] & a$fl[j] > a$fl[j-1] & (a$fl[j] - a$fl[j-1]) > 20){
+			b <- a[(j-1):j,]
+			increases_20 <- rbind(increases_20,b)
+		}
+	}
+}
+str(increases_20)
+# I am removing all those with >45 mm increase from the data set, plus those in the same season with <20 mm
+charr_data <- charr_data[which(!(charr_data$index %in% increases_45$index)),]
+charr_data <- charr_data[which(!(charr_data$index %in% increases_20$index)),]
+charr_data$id <- droplevels(charr_data$id)
+str(charr_data)
+## 7th July 9247 observations from 3804 fish
+
+charr_data[which(charr_data$fl>200),]
 
 #### CLEAN DATA ####
 plot(charr_data$fl ~ charr_data$date)
