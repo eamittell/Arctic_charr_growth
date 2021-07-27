@@ -1,5 +1,5 @@
 # Model validation for: Spatiotemporal variation in individual growth rates in small isolated populations of Arctic charr (Salvelinus alpinus)
-# July 2021
+# May 2021
 # Elizabeth Mittell
 
 # Running the model with randomly deleted observations
