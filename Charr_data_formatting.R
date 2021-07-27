@@ -231,6 +231,6 @@ temps$cave_k <- paste(temps$cave,temps$k,sep=",")
 str(temps)
 data$temp <- temps$temperature[match(data$cave_k,temps$cave_k)]
 table(is.na(data$temp))
-# 7058 with temperatures, 2204 without
+# 7046 with temperatures, 2201 without
 
 #write.csv(data,"model_data.csv")
