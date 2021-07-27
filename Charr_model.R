@@ -20,7 +20,7 @@ data$cs_index <- as.character(data$cs_index)
 data$cave_k_season <- as.character(data$cave_k_season)
 data$cave_k <- as.character(data$cave_k)
 #str(data)
-# 9262 measurements
+# 9247 measurements
 
 
 ## Vector with first capture occassion (k) for each fish (ordered on id)
