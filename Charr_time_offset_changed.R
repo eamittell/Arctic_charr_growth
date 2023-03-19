@@ -7,7 +7,7 @@
 library(rjags)
 
 # Get data
-data <- read.csv("model_data_070721.csv")
+data <- read.csv("model_data.csv")
 data <- data[,-1]
 data$k <- as.numeric(data$k)
 data$fl <- as.numeric(data$fl)
