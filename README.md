@@ -4,7 +4,7 @@ The code in this repository is for processing raw data from the Arctic charr stu
 
 The code is also for formatting the data from the study to use in and run models for the above paper.
 
-In this study we assess the spatial, temporal and spatiotemporal variation in growth rate among isolated populations of Arctic charr. We demonstrate how to incorporate a covariate that contains missing data without data deletion or data augmentation, but via a state-space model where the covariate and its' uncertainty are incorporated into the model. This is an important consideration in ecological models. We use temperature as a covariate in this model, which is an important driver of growth rates in fishes. We also discuss the limits of missing data when including a covariate in this way. Furthermore, we find interesting biological results in our unusual study system.
+In this study we assess the spatial, temporal and spatiotemporal variation in growth rate among isolated populations of Arctic charr. We demonstrate how to incorporate a covariate that contains missing data without data deletion or data augmentation that uses averages, but via a state-space model where the covariate and its' uncertainty are incorporated into the model during the augmentation process. This is an important consideration in ecological models. We use temperature as a covariate in this model, which is an important driver of growth rates in fishes. We also discuss the limits of missing data when including a covariate in this way. Furthermore, we find interesting biological results in our unusual study system.
 
 C.A.L., B.K.K., K.R., & E.A.M. collected the data for this study. E.A.M. & M.B.M. analysed the data. E.A.M. is responsible for the code in this repository.
 
