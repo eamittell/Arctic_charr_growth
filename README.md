@@ -13,3 +13,16 @@ Elizabeth A. Mittell^1,2^*, Camille A. Leblanc^1^, Bjarni K. Kristjánsson^1^, M
 ^1^Department of Aquaculture and Fish Biology, Hólar University, Sauðárkrókur, Iceland; ^2^School of Biology, University of St. Andrews, UK; ^3^Department of Integrative Biology, University of Guelph, Guelph, ON, Canada; ^4^Department of Aquatic Ecology, EAWAG and Institute of Integrative Biology, ETH‐Zurich, Switzerland; ^5^Department of Biology and Environmental Science, University of Jyväskylä, Finland
 
 *Corresponding author: Elizabeth A. Mittell, e.mittell@ed.ac.uk, e.mittell@gmail.com -- current address Univeristy of Edinburgh, UK.
+
+### Scripts
+Charr_env_data_processing.R and Charr_data_processing.R contain the code that was used to go from the database to the data that was formatted for the models in the Charr_data_formatting.R script.
+
+Model_data.csv contains the processed data output from the above scripts. For each individual ID, the fork length (mm; size variable used), location (cave), year, season and measurement date are shown. The temperature is also shown where the data were available; NA is used to explicitly indicate missing information.
+
+Charr_model.R contains the model that was used in the main manuscript, including initial model convergence checks. Further model checks were run and are described in Charr_model_checks.R. Charr_time_offset_changed.R contains a model where an alternative time-offset was used. This did not make any difference to the results.
+
+Charr_model_checks_analyses.R contains the analyses that were run using the output from the model checks. The results of these are in the supplementary material.
+
+Asymptotic_size_Charr_growth.R contains the code for the thought experiment about aysmptotic size that is described in the supplementary material.
+
+The packages used within each script are shown in the scripts. These were run in various versions of R. All run and are installable in R version 4.3.2 as of 10th March 2024 on macOS Monterey version 12.7.1.
