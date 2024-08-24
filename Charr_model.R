@@ -2,12 +2,15 @@
 # CHARR MODEL #
 ###############
 # Lizy
-# Latest re-run: 7th July 2021
+# Latest re-run: 24th August 2024
 
 library(rjags)
 
+# File path to data
+file_path <- ""
+
 # Get data
-data <- read.csv("model_data.csv")
+data <- read.csv(paste(file_path,"model_data.csv",sep=""))
 data <- data[,-1]
 data$k <- as.numeric(data$k)
 data$fl <- as.numeric(data$fl)
@@ -21,7 +24,6 @@ data$cave_k_season <- as.character(data$cave_k_season)
 data$cave_k <- as.character(data$cave_k)
 #str(data)
 # 9247 measurements
-
 
 ## Vector with first capture occassion (k) for each fish (ordered on id)
 first_cap <- NULL
@@ -80,12 +82,6 @@ num_season <- as.integer(as.factor(season$season))
 
 cave_k_mat <- matrix(1:300, nrow = 20, ncol = 15) # Gives an integer value for each cave at each capture event
 
-n <- length(unique(data$id)) # 3804 individual fish
-k <- length(unique(data$k)) # 15 capture occassions
-y <- length(unique(data$year)) # 8 years
-d <- length(unique(data$day_index)) # 5 max caught within one k
-c <- length(unique(data$cave)) # 20 caves
-
 # Tracing 10 individual growth trajectories
 # Get multicapture data
 multi <- as.data.frame(table(data$id))
@@ -95,16 +91,32 @@ nm <- multi[,1]
 r <- sample(nm, 10, replace=F)
 # Get these individuals out of the data
 gro_ind <- data[which(data$id %in% r),]
-gro_ind_id <- as.factor(unique(gro_ind[,1]))
-fish <- NULL
-for(i in levels(gro_ind_id)){
-	fish[i] <- gro_ind[which(gro_ind$id %in% i),15]
+# Number of recaptures for each individual
+pick <- as.data.frame(table(gro_ind$id))
+# Randomly select one of the multiple captures to remove from the data
+rownames(pick) <- NULL
+# Records of multicaps
+gro_ind_2 <- gro_ind[which(gro_ind$id %in% pick[,1]),]
+delete <- NULL
+for(i in 1:length(pick[,1])){
+	a <- pick[i,1]
+	b <- gro_ind_2[gro_ind_2$id %in% a,]	
+	c <- sample(2:dim(b)[1],1)
+	b <- b[c,]
+	delete <- rbind(delete,b)
 }
-gro_ind_first <- fish
-names(gro_ind_first) <- NULL
-#write.csv(fish, file=paste("fish_traced_07_07_21.csv",sep=""))
+# Store data in another data set
+data2 <- data
+data <- data[which(!(rownames(data)%in%rownames(delete))),]
+gro_ind_id <- delete[,1]
+gro_ind_first <- delete[,15]
+write.csv(delete, file=paste(file_path,"fish_traced_240824.csv",sep=""))
 
-gro_ind_id <- as.character(gro_ind_id)
+n <- length(unique(data$id)) # 3804 individual fish
+k <- length(unique(data$k)) # 15 capture occassions
+y <- length(unique(data$year)) # 8 years
+d <- length(unique(data$day_index)) # 5 max caught within one k
+c <- length(unique(data$cave)) # 20 caves
 
 ##### MODEL -- TEMPERATURE USING MONTHLY AVERAGES ######
 temp_model <-"var size[n,k], growth[n,k];
@@ -196,7 +208,6 @@ for(j in 1:20){
 }
 for(i in 1:20){
 	for(j in 2:k){
-#		rand_gr_coefs_t_s[cave_k[i,j],season[j],1:2] ~ dmnorm(zeros[1:2],tau_ts[season[j],1:2,1:2])
 		rand_gr_coefs_t_s[cave_k[i,j],1:2] ~ dmnorm(zeros[1:2],tau_ts[season[j],1:2,1:2])
 	}
 }
@@ -315,12 +326,13 @@ temp_obs = data$temp,
 inds = gro_ind_id,
 inds_first = gro_ind_first
 )
+save(data_fish_temp,file=paste(file_path,"jags_data_240824.RData",sep=""))
 
 temp_model <- jags.model(file="./temp_model.jags", data=data_fish_temp, n.chains=4, n.adapt=10000)
 
 results <- jags.samples(model=temp_model, variable.names=c("sd","mu","mu_temp","beta","beta_temp","beta_temp_size","b_temp_cave","b_temp_year","sd_temp","sd_temp_cave","sd_temp_year","sd_temp_res","sd_a_t_sum","sd_b_t_sum","sd_a_t_win","sd_b_t_win","cor_ab_t_sum","cor_ab_t_win","sd_a_s_sum","sd_b_s_sum","sd_a_s_win","sd_b_s_win","cor_ab_s_sum","cor_ab_s_win","sd_a_ts_sum","sd_b_ts_sum","sd_a_ts_win","sd_b_ts_win","cor_ab_ts_sum","cor_ab_ts_win","rand_gr_coefs_t","rand_gr_coefs_s","rand_gr_coefs_t_s","beta_g","temp","lengths"), n.iter=100000, thin=10)
 
-#save(results,file="charr_results.rda")
+save(results,file="charr_results_240824.rda")
 
 # Check the model convergence
 f <-function(x){
