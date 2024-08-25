@@ -341,8 +341,8 @@ f <-function(x){
 	if(dim(x)[2]>1){
 		for(c in 2:dim(x)[2]){
 			lines(x[,c],col=c)
-    }
-  }
+		}
+	}
 }
 
 par(mfrow=c(4,2))
@@ -365,6 +365,7 @@ f(results$sd_b_s_win[1,,])
 f(results$cor_ab_s_sum[1,,])
 f(results$cor_ab_s_win[1,,])
 
+par(mfrow=c(6,2),mar=c(1,1,1,1))
 f(results$sd_a_t_sum[1,,])
 f(results$sd_a_t_win[1,,])
 f(results$sd_b_t_sum[1,,])
@@ -386,6 +387,7 @@ f(results$sd_temp[2,,])
 f(results$sd_temp_res[1,,])
 f(results$sd_temp_res[2,,])
 
+par(mfrow=c(4,2),mar=c(1,1,1,1))
 f(results$sd_temp_cave[1,,])
 f(results$sd_temp_cave[2,,])
 f(results$sd_temp_year[1,,])
